@@ -46,7 +46,6 @@ all_queries = {
 }
 
 tweets = []
-
 for query, val in all_queries.items():
     currSet = get_list(all_queries[query][1], all_queries[query][2], query)
     for tweet in currSet:
