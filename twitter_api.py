@@ -4,6 +4,9 @@ import snscrape.modules.twitter as sntwitter
 import pandas as pd
 import random
 import numpy as np
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
 #Todo Look at Sentiment
 
 def daterange(start_date, end_date):
@@ -16,12 +19,14 @@ def get_list(start_date, end_date, topic):
     for single_date in daterange(start_date, end_date):
         query = topic[0:len(topic)-1] +" lang:en until:"+str(single_date) + " since:"+str(prev)
         prev = single_date
+        print("stuck")
         currSet = sntwitter.TwitterSearchScraper(query).get_items()
         count = 0
         for curr in currSet:
             if count == 10:
                 break
             else:
+                print("adding to temp")
                 temp.append(curr)
                 count = count +1
     return temp
@@ -46,14 +51,37 @@ all_queries = {
 }
 
 tweets = []
-for query, val in all_queries.items():
-    currSet = get_list(all_queries[query][1], all_queries[query][2], query)
-    for tweet in currSet:
-        tweets.append([tweet.date, tweet.content, tweet.user.location, all_queries[query][0]])
-df = pd.DataFrame(tweets, columns=['Date', 'Content', 'Location', 'Period'])
-df.to_csv("217BProject_data.csv")
 
+def fill_dataset():
+  for query, val in all_queries.items():
+      currSet = get_list(all_queries[query][1], all_queries[query][2], query)
+      for tweet in currSet:
+          print("scraping")
+          tweets.append([tweet.date, tweet.content, tweet.user.location, all_queries[query][0]])
+  df = pd.DataFrame(tweets, columns=['Date', 'Content', 'Location', 'Period'])
+  df.to_csv("217BProject_data.csv")
+  sentiment_analysis_test(df)   # added in 
 
+def sentiment_analysis_test():
+    analyzer = SentimentIntensityAnalyzer()
+    #sentence = "This is a good movie"
+    # creating a list of dataframe columns
+    columns = list(df)
+    for i in columns:
+        vs = analyzer.polarity_scores(df[i][2])
+        predictions.append(vs)
+        # add these into a list of strings called predictions 
+    df.insert(5, "newcol", predictions)
+    df.head
+
+fill_dataset()
+#sentiment_analysis_test()
+
+# steps to download to include in readme
+# pip install vaderSentiment
+# go into python terminal
+# import nltk
+# nltk.downloader.download('vader_lexicon')
 
 
 
