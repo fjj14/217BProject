@@ -7,8 +7,6 @@ import numpy as np
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
-#Todo Look at Sentiment
-
 def daterange(start_date, end_date):
     for n in range(int((end_date - start_date).days)):
         yield start_date + timedelta(n)
@@ -60,22 +58,28 @@ def fill_dataset():
           tweets.append([tweet.date, tweet.content, tweet.user.location, all_queries[query][0]])
   df = pd.DataFrame(tweets, columns=['Date', 'Content', 'Location', 'Period'])
   df.to_csv("217BProject_data.csv")
-  sentiment_analysis_test(df)   # added in 
+  #sentiment_analysis_test(df)   # added in 
 
-def sentiment_analysis_test():
+def sentiment_analysis():
     analyzer = SentimentIntensityAnalyzer()
-    #sentence = "This is a good movie"
+    df = pd.read_csv("new_data.csv")
+    predictions = []
     # creating a list of dataframe columns
-    columns = list(df)
-    for i in columns:
-        vs = analyzer.polarity_scores(df[i][2])
+    print(df.loc[1]["Content"])
+    for i in range(10, 70000):
+        print(i)
+        vs = analyzer.polarity_scores(str(df["Content"][i]))
         predictions.append(vs)
         # add these into a list of strings called predictions 
-    df.insert(5, "newcol", predictions)
-    df.head
+    f = open("predictions_test.txt", "w")
+    for prediction in predictions:
+      f.write(str(prediction)+ '\n')
 
-fill_dataset()
-#sentiment_analysis_test()
+    df.loc[:,'Sentiment Scores'] = pd.Series(predictions)
+    df.to_csv("Sentiment_DataFrame.csv")
+
+#fill_dataset()
+sentiment_analysis()
 
 # steps to download to include in readme
 # pip install vaderSentiment
