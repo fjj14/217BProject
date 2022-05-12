@@ -95,9 +95,9 @@ def analyze_dataset():
             country_sentiment[country][per] = []
             country_sentiment[country][per].append(1)
             country_sentiment[country][per].append(curr_score)
-    print(str(country_sentiment))
-    data = pd.DataFrame(country_sentiment,columns=['Country Data'])
-    data.to_csv("Country_Results.csv")
+    with open('Country_Results.csv', 'w') as f:
+        for key in country_sentiment.keys():
+            f.write("%s, %s\n" % (key, country_sentiment[key]))
 #fill_dataset()
 analyze_dataset()
 
