@@ -95,9 +95,17 @@ def analyze_dataset():
             country_sentiment[country][per] = []
             country_sentiment[country][per].append(1)
             country_sentiment[country][per].append(curr_score)
+    multiple_entries = {}
+    for key, val in country_sentiment.items():
+        if len(country_sentiment[key]) > 1:
+            multiple_entries[key] = val
     with open('Country_Results.csv', 'w') as f:
         for key in country_sentiment.keys():
             f.write("%s, %s\n" % (key, country_sentiment[key]))
+    with open('Multiple_Entries.csv', 'w') as f:
+        for key in multiple_entries.keys():
+            f.write("%s, %s\n" % (key, multiple_entries[key]))
+
 #fill_dataset()
 analyze_dataset()
 
