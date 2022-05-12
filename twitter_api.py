@@ -78,23 +78,25 @@ def analyze_dataset():
     for ind in df.index:
         country = df['Location'][ind]
         per = df['Period'][ind]
+        topic = df['Topic'][ind]
         curr = df['Sentiment Scores'][ind]
+        tup = (per, topic)
         curr_score = float(curr[curr.index("compound': ") + len("compound': "):-1])
         if country in country_sentiment:
-            if per in country_sentiment[country]:
-                count = country_sentiment[country][per][0]
-                avg = country_sentiment[country][per][1]
-                country_sentiment[country][per][0] = count + 1
-                country_sentiment[country][per][1] = ((avg* count) + curr_score) / (count + 1)
+            if tup in country_sentiment[country]:
+                count = country_sentiment[country][tup][0]
+                avg = country_sentiment[country][tup][1]
+                country_sentiment[country][tup][0] = count + 1
+                country_sentiment[country][tup][1] = ((avg* count) + curr_score) / (count + 1)
             else:
-                country_sentiment[country][per] = []
-                country_sentiment[country][per].append(1)
-                country_sentiment[country][per].append(curr_score)
+                country_sentiment[country][tup] = []
+                country_sentiment[country][tup].append(1)
+                country_sentiment[country][tup].append(curr_score)
         else:
             country_sentiment[country] = dict()
-            country_sentiment[country][per] = []
-            country_sentiment[country][per].append(1)
-            country_sentiment[country][per].append(curr_score)
+            country_sentiment[country][tup] = []
+            country_sentiment[country][tup].append(1)
+            country_sentiment[country][tup].append(curr_score)
     multiple_entries = {}
     for key, val in country_sentiment.items():
         if len(country_sentiment[key]) > 1:
