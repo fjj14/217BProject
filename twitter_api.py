@@ -67,8 +67,39 @@ def fill_dataset():
   df.to_csv("217BProject_data.csv")
   #sentiment_analysis_test(df)   # added in 
 
-fill_dataset()
+"""
+Categorize tweets by country. Create Dictionary key: country, value: list of tuples, 
+each tuple is time period and average score ex: US: [(1, .5), (3, -.2)]
 
+"""
+def analyze_dataset():
+    df = pd.read_csv('217BProject_data.csv', lineterminator='\n')
+    country_sentiment = {}
+    for ind in df.index:
+        country = df['Location'][ind]
+        per = df['Period'][ind]
+        curr = df['Sentiment Scores'][ind]
+        curr_score = float(curr[curr.index("compound': ") + len("compound': "):-1])
+        if country in country_sentiment:
+            if per in country_sentiment[country]:
+                count = country_sentiment[country][per][0]
+                avg = country_sentiment[country][per][1]
+                country_sentiment[country][per][0] = count + 1
+                country_sentiment[country][per][1] = ((avg* count) + curr_score) / (count + 1)
+            else:
+                country_sentiment[country][per] = []
+                country_sentiment[country][per].append(1)
+                country_sentiment[country][per].append(curr_score)
+        else:
+            country_sentiment[country] = dict()
+            country_sentiment[country][per] = []
+            country_sentiment[country][per].append(1)
+            country_sentiment[country][per].append(curr_score)
+    print(str(country_sentiment))
+    data = pd.DataFrame(country_sentiment,columns=['Country Data'])
+    data.to_csv("Country_Results.csv")
+#fill_dataset()
+analyze_dataset()
 
 # steps to download to include in readme
 # pip install vaderSentiment
