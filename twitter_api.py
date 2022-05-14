@@ -75,6 +75,7 @@ each tuple is time period and average score ex: US: [(1, .5), (3, -.2)]
 def analyze_dataset():
     df = pd.read_csv('217BProject_data.csv', lineterminator='\n')
     country_sentiment = {}
+    country_sentiment["all"] = dict()
     for ind in df.index:
         country = df['Location'][ind]
         per = df['Period'][ind]
@@ -97,6 +98,16 @@ def analyze_dataset():
             country_sentiment[country][tup] = []
             country_sentiment[country][tup].append(1)
             country_sentiment[country][tup].append(curr_score)
+        if not (tup in country_sentiment["all"]):
+            country_sentiment["all"][tup] = []
+            country_sentiment["all"][tup].append(1)
+            country_sentiment["all"][tup].append(curr_score)
+        else:
+            count = country_sentiment["all"][tup][0]
+            avg = country_sentiment["all"][tup][1]
+            country_sentiment["all"][tup][0] = count + 1
+            country_sentiment["all"][tup][1] = ((avg * count) + curr_score) / (count + 1)
+
     multiple_entries = {}
     for key, val in country_sentiment.items():
         if len(country_sentiment[key]) > 1:
